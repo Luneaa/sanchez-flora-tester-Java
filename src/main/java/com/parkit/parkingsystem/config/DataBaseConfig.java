@@ -16,7 +16,7 @@ public class DataBaseConfig {
         logger.info("Create DB connection");
         Class.forName("com.mysql.cj.jdbc.Driver");
         Properties login = new Properties();
-        try (FileReader in = new FileReader("login.properties")) {
+        try (FileReader in = new FileReader("src/main/resources/login.properties")) {
             login.load(in);
         } catch (IOException e) {
             logger.error("Error while reading login.properties");

@@ -7,6 +7,8 @@ import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,14 +16,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ParkingServiceTest {
 
+    private static final Logger logger = LogManager.getLogger("TestConfig");
     private static ParkingService parkingService;
 
     @Mock
@@ -33,7 +40,7 @@ class ParkingServiceTest {
 
     @BeforeEach
     public void setUpPerTest() {
-        parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, Clock.systemUTC());
     }
     void initGetTicket() {
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
@@ -49,7 +56,7 @@ class ParkingServiceTest {
             when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
         }
         catch (Exception e){
-            e.printStackTrace();
+            logger.error("Failed to set up test mock objects", e);
             throw  new RuntimeException("Failed to set up test mock objects");
         }
     }
@@ -106,7 +113,12 @@ class ParkingServiceTest {
     void processExitingVehicleExceptionTest() throws Exception {
         mockReadVehicleRegistrationNumber();
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenThrow(new Exception());
-        parkingService.processExitingVehicle();
+        try {
+            parkingService.processExitingVehicle();
+        }
+        catch (Exception e){
+            // Catch exception to continue test
+        }
         verify(parkingSpotDAO, Mockito.times(0)).updateParking(any(ParkingSpot.class));
         verify(ticketDAO, Mockito.times(0)).getNbTicket(any(String.class));
     }
@@ -161,6 +173,7 @@ class ParkingServiceTest {
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(0);
         parkingService.processIncomingVehicle();
+
         verify(ticketDAO, Mockito.times(0)).saveTicket(any(Ticket.class));
     }
 }
