@@ -10,8 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Clock;
-import java.time.Instant;
-import java.util.Calendar;
 import java.util.Date;
 
 public class ParkingService {

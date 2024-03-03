@@ -15,16 +15,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -33,7 +29,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ParkingDataBaseIT {
 
-    private static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
+    private final static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
     private static ParkingSpotDAO parkingSpotDAO;
     private static TicketDAO ticketDAO;
     private static DataBasePrepareService dataBasePrepareService;
@@ -42,7 +38,7 @@ public class ParkingDataBaseIT {
     private static InputReaderUtil inputReaderUtil;
 
     @BeforeAll
-    public static void setUp() throws Exception{
+    public static void setUp(){
         parkingSpotDAO = new ParkingSpotDAO();
         parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
         ticketDAO = new TicketDAO();
